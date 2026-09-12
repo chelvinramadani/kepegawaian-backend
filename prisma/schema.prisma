@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  nama      String
+  role      String   @default("staff")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Pegawai {
+  id           Int       @id @default(autoincrement())
+  nip          String    @unique
+  nama         String
+  nik          String?   @unique
+  tempatLahir  String?
+  tanggalLahir DateTime?
+  jenisKelamin String
+  alamat       String?
+  noTelepon    String?
+  email        String?   @unique
+  tanggalMasuk DateTime?
+  status       String    @default("Aktif")
+
+  jabatanId    Int?
+  unitId       Int?
+  pendidikanId Int?
+
+  jabatan      Jabatan?    @relation(fields: [jabatanId], references: [id])
+  unit         UnitKerja?  @relation(fields: [unitId], references: [id])
+  pendidikan   Pendidikan? @relation(fields: [pendidikanId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("pegawai")
+}
+
+model Jabatan {
+  id         Int      @id @default(autoincrement())
+  nama       String   @unique
+  keterangan String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pegawai Pegawai[]
+
+  @@map("jabatan")
+}
+
+model UnitKerja {
+  id         Int      @id @default(autoincrement())
+  nama       String   @unique
+  keterangan String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pegawai Pegawai[]
+
+  @@map("unit_kerja")
+}
+
+model Pendidikan {
+  id         Int      @id @default(autoincrement())
+  nama       String   @unique
+  jenjang    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pegawai Pegawai[]
+
+  @@map("pendidikan")
+}
